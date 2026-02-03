@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tennis Match Date?</title>
+<style>
+  /* -------------------------------------------------
+     Basic page layout & “tennis court” look
+     ------------------------------------------------- */
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #e0f7fa 0%, #c8e6c9 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: default;
+  }
+  .card {
+    position: relative;
+    text-align: center;
+    padding: 2rem 2.5rem;
+    background: #ffffffdd;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    backdrop-filter: blur(4px);
+    border: 4px solid #a5d6a7;            /* light court line */
+  }
+  h1 {
+    margin: 0 0 .6rem;
+    font-size: 2rem;
+    color: #1b5e20;
+  }
+  .subtitle {
+    margin: 0 0 1.5rem;
+    font-size: 1rem;
+    color: #424242;
+    font-style: italic;
+  }
+
+  /* -------------------------------------------------
+     Buttons – shared style
+     ------------------------------------------------- */
+  .btn {
+    min-width: 120px;
+    padding: .75rem 1.5rem;
+    margin: 0 .4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,.2); }
+  .btn:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(0,0,0,.1); }
+
+  /* YES – stable, attractive */
+  .yes {
+    background: #43a047;           /* deeper court green */
+  }
+  .yes:hover { background: #388e3c; }
+
+  /* NO – will move, keep same look for consistency */
+  .no {
+    background: #f5a623;           /* tennis‑ball orange */
+  }
+  .no:hover { background: #e65100; }
+
+  /* -------------------------------------------------
+     Tennis ball “decoration” – tiny animated balls
+     ------------------------------------------------- */
+  .ball {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border: 2px solid #f5a623;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(0,0,0,.2);
+    opacity: .8;
+    animation: bounce 2s infinite alternate;
+  }
+  .ball::before,
+  .ball::after {
+    content:"";
+    position:absolute;
+    width:6px;height:6px;
+    background:#f5a623;
+    border-radius:50%;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+  }
+  .ball::before { transform:translate(-50%,-50%) translate(-4px,-4px); }
+  .ball::after  { transform:translate(-50%,-50%) translate( 4px, 4px); }
+
+  @keyframes bounce {
+    from { transform: translateY(0) translateX(0) rotate(0deg); }
+    to   { transform: translateY(-6px) translateX(4px) rotate(15deg); }
+  }
+
+  /* -------------------------------------------------
+     Responsive tweaks
+     ------------------------------------------------- */
+  @media (max-width: 480px) {
+    .card { padding: 1.5rem 1.8rem; }
+    h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Will you be my tennis match date? 🎾</h1>
+  <div class="subtitle">Ya a7la Nounouette f Denya</div>
+
+  <div>
+    <button class="btn yes" id="yesBtn">YES</button>
+    <button class="btn no"  id="noBtn">NO</button>
+  </div>
+
+  <!-- A few decorative tennis balls that bounce gently -->
+  <div class="ball" style="top:10%; left:12%;"></div>
+  <div class="ball" style="bottom:15%; right:8%;  animation-delay:0.3s;"></div>
+  <div class="ball" style="left:60%; top:30%;  animation-delay:0.6s;"></div>
+</div>
+
+<script>
+  // ---------- YES button ----------
+  document.getElementById('yesBtn').addEventListener('click', () => {
+    // You can replace this with any action you like (e.g., open a form, redirect, etc.)
+    alert('Hahaha malla jaw 🎉 Enti aalik bl outfit w ena aalia bl raquettet w kwerrr hahaha  ☀️ See you vendredi inchallah 16h❤️');
+  });
+
+  // ---------- NO button – evasive maneuver ----------
+  const noBtn = document.getElementById('noBtn');
+  const card = document.querySelector('.card');
+
+  // Helper: pick a random position that keeps the button fully inside the card
+  function randomPosition() {
+    const cardRect = card.getBoundingClientRect();
+    const btnRect  = noBtn.getBoundingClientRect();
+
+    // Compute allowable ranges (so the button never overflows the card)
+    const maxX = cardRect.width  - btnRect.width  - 8; // 8px margin from edges
+    const maxY = cardRect.height - btnRect.height - 8;
+
+    const x = Math.random() * maxX + 4; // +4 to keep a tiny border
+    const y = Math.random() * maxY + 4;
+
+    return { x, y };
+  }
+
+  // Move the button when the mouse gets within a "danger zone"
+  const dangerDist = 80; // pixels from cursor
+  noBtn.addEventListener('mouseenter', () => {
+    // If already far enough, do nothing – we only need to move when close
+    const rect = noBtn.getBoundingClientRect();
+    const mouseX = (event?.clientX ?? 0);
+    const mouseY = (event?.clientY ?? 0);
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top  + rect.height/2;
+    const dist = Math.hypot(mouseX-cx, mouseY-cy);
+    if (dist > dangerDist) return; // safe, stay put
+
+    // Otherwise relocate
+    const {x, y} = randomPosition();
+    noBtn.style.position = 'absolute';
+    noBtn.style.left = `${x}px`;
+    noBtn.style.top  = `${y}px`;
+    noBtn.style.margin = 0; // reset margin used in flow layout
+  });
+
+  // Also handle mousemove in case the user circles around while the button is already close
+  document.addEventListener('mousemove', (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top  + rect.height/2;
+    const dist = Math.hypot(e.clientX-cx, e.clientY-cy);
+    if (dist < dangerDist) {
+      const {x, y} = randomPosition();
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top  = `${y}px`;
+    }
+  });
+</script>
+
+</body>
+</html>
